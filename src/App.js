@@ -1,23 +1,41 @@
-import logo from './logo.svg';
+import { useRef, useState } from 'react';
 import './App.css';
+import ImageGrallery from './ImageGrallery';
 
 function App() {
+  const [fetchData, setFetchData] = useState([]);
+  const ref = useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(ref.current.value);
+
+    //API URL
+    const endPointURL =
+      `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${ref.current.value}&image_type=photo`
+    
+    //console.log(process.env.REACT_APP_PIXABAY_API_KEY)
+    
+    //APIへアクセス（データフェッチング）
+    fetch(endPointURL)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        
+        console.log(endPointURL);
+        console.log(data.hits);
+        setFetchData(data.hits);
+      });
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h2>My Pixabayテスト</h2>
+      <form onSubmit={(e) => handleSubmit(e)}>
+        <input type="text" placeholder="画像検索" ref={ref} />
+      </form>
+      <ImageGrallery fetchData={fetchData} />
     </div>
   );
 }
